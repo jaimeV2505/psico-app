@@ -16,11 +16,11 @@ export default async function DashboardPage() {
     { data: ultimosPacientes },
     { count: sesionesEsteMes },
   ] = await Promise.all([
-    supabase.from('pacientes').select('*', { count: 'exact', head: true }).eq('profesional_id', user!.id),
-    supabase.from('pacientes').select('*', { count: 'exact', head: true }).eq('profesional_id', user!.id).eq('estado', 'activo'),
-    supabase.from('citas').select('*, pacientes(nombre, apellido)').eq('profesional_id', user!.id).eq('fecha', new Date().toISOString().split('T')[0]).order('hora_inicio'),
+supabase.from('pacientes').select('*', { count: 'exact', head: true }).eq('profesional_id', user!.id).is('deleted_at', null),
+    supabase.from('pacientes').select('*', { count: 'exact', head: true }).eq('profesional_id', user!.id).eq('estado', 'activo').is('deleted_at', null),
+supabase.from('citas').select('*, pacientes(nombre, apellido)').eq('profesional_id', user!.id).eq('fecha', new Date().toISOString().split('T')[0]).order('hora_inicio'),
     supabase.from('citas').select('*, pacientes(nombre, apellido)').eq('profesional_id', user!.id).gte('fecha', new Date().toISOString().split('T')[0]).in('estado', ['pendiente', 'confirmada']).order('fecha').order('hora_inicio').limit(5),
-    supabase.from('pacientes').select('id, nombre, apellido, estado, created_at').eq('profesional_id', user!.id).order('created_at', { ascending: false }).limit(5),
+supabase.from('pacientes').select('id, nombre, apellido, estado, created_at').eq('profesional_id', user!.id).is('deleted_at', null).order('created_at', { ascending: false }).limit(5),
     supabase.from('sesiones').select('*', { count: 'exact', head: true }).eq('profesional_id', user!.id).gte('fecha', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]),
   ])
 

@@ -12,11 +12,14 @@ export default function DeletePacienteButton({ pacienteId, nombre }: Props) {
   const router = useRouter()
 
   async function handleDelete() {
-    if (!confirm(`¿Eliminar a ${nombre}? Esta acción eliminará también todas sus sesiones y no se puede deshacer.`)) return
+    if (!confirm(`¿Eliminar a ${nombre}? Podrás recuperarlo desde la papelera.`)) return
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.from('pacientes').delete().eq('id', pacienteId)
-    if (error) { toast.error('Error al eliminar: ' + error.message); setLoading(false) }
+    const { error } = await supabase
+      .from('pacientes')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', pacienteId)
+    if (error) { toast.error(error.message); setLoading(false) }
     else { toast.success('Paciente eliminado'); router.push('/pacientes'); router.refresh() }
   }
 

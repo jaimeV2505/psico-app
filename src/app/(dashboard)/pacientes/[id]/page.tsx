@@ -24,6 +24,7 @@ export default async function PacienteDetailPage({ params }: { params: Promise<{
     .select('*')
     .eq('id', id)
     .eq('profesional_id', user.id)
+    .is('deleted_at', null)
     .single()
 
   if (!paciente) notFound()

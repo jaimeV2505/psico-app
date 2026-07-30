@@ -1,6 +1,5 @@
 {
-  "/auth/registro/page": "app/auth/registro/page.js",
-  "/page": "app/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js"
+  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
+  "/(dashboard)/pacientes/[id]/page": "app/(dashboard)/pacientes/[id]/page.js",
+  "/(dashboard)/pacientes/nuevo/page": "app/(dashboard)/pacientes/nuevo/page.js"
 }
