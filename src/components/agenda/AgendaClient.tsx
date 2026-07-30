@@ -88,8 +88,7 @@ export default function AgendaClient({ citas, pacientes, inicioSemana, profesion
         <div className="text-center">
           <p className="font-semibold text-gray-900 capitalize">{mesLabel}</p>
           <p className="text-xs text-gray-500">
-            {formatearFecha(dias[0].toISOString())} — {formatearFecha(dias[6].toISOString())}
-          </p>
+          {formatearFecha(dias[0].toISOString().split('T')[0])} — {formatearFecha(dias[6].toISOString().split('T')[0])}          </p>
         </div>
         <button onClick={() => navegarSemana(1)} className="btn-secondary py-2 px-3">
           <ChevronRight className="w-4 h-4" />
