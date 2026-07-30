@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Brain, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
@@ -29,15 +29,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-sage-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-600 rounded-2xl mb-4 shadow-lg">
-            <Brain className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 shadow-lg overflow-hidden border-4 border-primary-200">
+            <img src="/avatar-sandra.svg" alt="Sandra Valeta" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">PsicoApp</h1>
-          <p className="text-gray-500 text-sm mt-1">Gestión clínica para profesionales by Doctora Sandra Valeta</p>
+          <h1 className="text-2xl font-bold text-gray-900">Sandra Valeta</h1>
+          <p className="text-gray-500 text-sm mt-1">Psicología Clínica · Gestión profesional</p>
         </div>
 
         {/* Card */}

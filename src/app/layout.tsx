@@ -3,8 +3,8 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
-  title: 'PsicoApp — Gestión de Pacientes',
-  description: 'Sistema de gestión clínica para psicólogos',
+  title: 'Sandra Valeta · Psicología',
+description: 'Gestión clínica profesional',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

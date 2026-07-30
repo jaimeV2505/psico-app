@@ -39,12 +39,12 @@ export default function Sidebar({ profesional }: Props) {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-        <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-          <Brain className="w-5 h-5 text-white" />
-        </div>
+        <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-200 flex-shrink-0">
+  <img src="/avatar-sandra.svg" alt="Sandra Valeta" className="w-full h-full object-cover" />
+</div>
         <div className="min-w-0">
-          <p className="font-bold text-gray-900 text-sm truncate">PsicoApp</p>
-          <p className="text-xs text-gray-400 truncate">{profesional.especialidad}</p>
+          <p className="font-bold text-gray-900 text-sm truncate">Sandra Valeta</p>
+<p className="text-xs text-gray-400 truncate">Psicología Clínica</p>
         </div>
       </div>
 

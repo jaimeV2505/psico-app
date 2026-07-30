@@ -16,6 +16,21 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/(dashboard)/pacientes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(dashboard)/pacientes/page.js"
+    ],
+    "/(dashboard)/agenda/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(dashboard)/agenda/page.js"
+    ],
+    "/(dashboard)/papelera/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(dashboard)/papelera/page.js"
+    ],
     "/(dashboard)/pacientes/nuevo/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -26,20 +41,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(dashboard)/pacientes/[id]/page.js"
     ],
-    "/(dashboard)/pacientes/page": [
+    "/(dashboard)/pacientes/[id]/editar/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dashboard)/pacientes/page.js"
+      "static/chunks/app/(dashboard)/pacientes/[id]/editar/page.js"
     ],
-    "/(dashboard)/papelera/page": [
+    "/(dashboard)/perfil/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dashboard)/papelera/page.js"
+      "static/chunks/app/(dashboard)/perfil/page.js"
     ],
-    "/(dashboard)/agenda/page": [
+    "/auth/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dashboard)/agenda/page.js"
+      "static/chunks/app/auth/login/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
