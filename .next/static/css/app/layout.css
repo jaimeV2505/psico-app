@@ -642,6 +642,24 @@ body {
 .top-4{
   top: 1rem;
 }
+.bottom-\[-150px\]{
+  bottom: -150px;
+}
+.left-\[-100px\]{
+  left: -100px;
+}
+.left-\[10\%\]{
+  left: 10%;
+}
+.right-\[-100px\]{
+  right: -100px;
+}
+.top-\[-100px\]{
+  top: -100px;
+}
+.top-\[30\%\]{
+  top: 30%;
+}
 .z-10{
   z-index: 10;
 }
@@ -781,6 +799,15 @@ body {
 .h-20{
   height: 5rem;
 }
+.h-\[200px\]{
+  height: 200px;
+}
+.h-\[400px\]{
+  height: 400px;
+}
+.h-\[500px\]{
+  height: 500px;
+}
 .min-h-\[120px\]{
   min-height: 120px;
 }
@@ -828,6 +855,15 @@ body {
 }
 .w-20{
   width: 5rem;
+}
+.w-\[200px\]{
+  width: 200px;
+}
+.w-\[400px\]{
+  width: 400px;
+}
+.w-\[500px\]{
+  width: 500px;
 }
 .min-w-0{
   min-width: 0px;
@@ -1440,6 +1476,15 @@ body {
 }
 .opacity-40{
   opacity: 0.4;
+}
+.opacity-10{
+  opacity: 0.1;
+}
+.opacity-15{
+  opacity: 0.15;
+}
+.opacity-20{
+  opacity: 0.2;
 }
 .shadow-lg{
   --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);

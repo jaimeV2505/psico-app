@@ -29,8 +29,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #fdf2f8 0%, #fff0f7 40%, #fce7f3 100%)'}}>
+      
+      {/* Círculos decorativos */}
+      <div className="absolute top-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full opacity-20" style={{background: 'radial-gradient(circle, #db2777, transparent)'}}></div>
+      <div className="absolute bottom-[-150px] left-[-100px] w-[500px] h-[500px] rounded-full opacity-15" style={{background: 'radial-gradient(circle, #ec4899, transparent)'}}></div>
+      <div className="absolute top-[30%] left-[10%] w-[200px] h-[200px] rounded-full opacity-10" style={{background: 'radial-gradient(circle, #f472b6, transparent)'}}></div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 shadow-lg overflow-hidden border-4 border-primary-200">
