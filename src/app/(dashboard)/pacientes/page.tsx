@@ -15,8 +15,8 @@ export default async function PacientesPage({ searchParams }: { searchParams: Pr
     .from('pacientes')
     .select('*, sesiones(count)')
     .eq('profesional_id', user!.id)
-.is('deleted_at', null)
-.order('apellido')
+    .is('deleted_at', null)
+    .order('apellido')
 
   if (params.estado) query = query.eq('estado', params.estado)
   if (params.genero) query = query.eq('genero', params.genero)

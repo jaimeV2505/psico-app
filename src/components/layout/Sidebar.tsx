@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import {
   Brain, LayoutDashboard, Users, Calendar, UserCircle,
-  LogOut, Menu, X, ChevronRight,
+  LogOut, Menu, X, ChevronRight,Trash2,
 } from 'lucide-react'
 import type { Profesional } from '@/types'
 import toast from 'react-hot-toast'
@@ -16,6 +16,7 @@ const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
   { href: '/pacientes', icon: Users, label: 'Pacientes' },
   { href: '/agenda', icon: Calendar, label: 'Agenda' },
+  { href: '/papelera', icon: Trash2, label: 'Papelera' },
   { href: '/perfil', icon: UserCircle, label: 'Mi perfil' },
 ]
 
