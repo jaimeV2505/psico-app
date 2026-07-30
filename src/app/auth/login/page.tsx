@@ -37,7 +37,7 @@ export default function LoginPage() {
             <Brain className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">PsicoApp</h1>
-          <p className="text-gray-500 text-sm mt-1">Gestión clínica para profesionales</p>
+          <p className="text-gray-500 text-sm mt-1">Gestión clínica para profesionales by Doctora Sandra Valeta</p>
         </div>
 
         {/* Card */}
