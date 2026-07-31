@@ -43,7 +43,7 @@ export default function LoginPage() {
             <img src="/avatar-sandra.svg" alt="Sandra Valeta" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Sandra Valeta</h1>
-          <p className="text-gray-500 text-sm mt-1">Psicología Clínica · Gestión profesional</p>
+          <p className="text-gray-500 text-sm mt-1">Psiquiatria Clínica · Gestión profesional</p>
         </div>
 
         {/* Card */}
