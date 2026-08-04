@@ -115,7 +115,7 @@ export function buscarCIE10(query: string): { codigo: string; nombre: string }[]
   if (!query || query.length < 2) return []
   const q = query.toUpperCase()
   return Object.entries(CIE10)
-    .filter(([codigo, nombre]) => 
+    .filter(([codigo, nombre]) =>
       codigo.startsWith(q) || nombre.toLowerCase().includes(query.toLowerCase())
     )
     .slice(0, 8)
@@ -124,4 +124,23 @@ export function buscarCIE10(query: string): { codigo: string; nombre: string }[]
 
 export function getNombreCIE10(codigo: string): string {
   return CIE10[codigo.toUpperCase()] || ''
+}
+
+export function getColorCIE10(codigo: string): { bg: string; text: string; dot: string } {
+  if (!codigo) return { bg: 'bg-gray-100', text: 'text-gray-700', dot: 'bg-gray-400' }
+  const cat = codigo.substring(0, 2).toUpperCase()
+  const num = parseInt(cat.substring(1))
+
+  if (num >= 0 && num <= 9)   return { bg: 'bg-purple-100', text: 'text-purple-800', dot: 'bg-purple-500' }
+  if (num >= 10 && num <= 19) return { bg: 'bg-red-100',    text: 'text-red-800',    dot: 'bg-red-500' }
+  if (num >= 20 && num <= 29) return { bg: 'bg-pink-100',   text: 'text-pink-800',   dot: 'bg-pink-500' }
+  if (num >= 30 && num <= 39) return { bg: 'bg-orange-100', text: 'text-orange-800', dot: 'bg-orange-500' }
+  if (num >= 40 && num <= 49) return { bg: 'bg-blue-100',   text: 'text-blue-800',   dot: 'bg-blue-500' }
+  if (num >= 50 && num <= 59) return { bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-500' }
+  if (num >= 60 && num <= 69) return { bg: 'bg-indigo-100', text: 'text-indigo-800', dot: 'bg-indigo-500' }
+  if (num >= 70 && num <= 79) return { bg: 'bg-teal-100',   text: 'text-teal-800',   dot: 'bg-teal-500' }
+  if (num >= 80 && num <= 89) return { bg: 'bg-cyan-100',   text: 'text-cyan-800',   dot: 'bg-cyan-500' }
+  if (num >= 90 && num <= 99) return { bg: 'bg-green-100',  text: 'text-green-800',  dot: 'bg-green-500' }
+
+  return { bg: 'bg-gray-100', text: 'text-gray-700', dot: 'bg-gray-400' }
 }

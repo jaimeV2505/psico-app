@@ -2,8 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft, Edit, Printer, Plus, Phone, Mail, MapPin,
-  Calendar, User, FileText, AlertCircle, Clock
+  ArrowLeft, Edit, Printer, Phone, Mail, MapPin,
+  User, FileText, AlertCircle, Clock
 } from 'lucide-react'
 import {
   formatearFecha, calcularEdad, ESTADO_PACIENTE_COLORS, ESTADO_PACIENTE_LABELS,
@@ -12,7 +12,7 @@ import {
 import type { Evolucion } from '@/types'
 import DeletePacienteButton from '@/components/pacientes/DeletePacienteButton'
 import AgregarEvolucionModal from '@/components/pacientes/AgregarEvolucionModal'
-import { getNombreCIE10 } from '@/lib/cie10'
+import { getNombreCIE10, getColorCIE10 } from '@/lib/cie10'
 
 export default async function PacienteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -60,6 +60,8 @@ export default async function PacienteDetailPage({ params }: { params: Promise<{
       </div>
     ) : null
 
+  const diagnosticoColor = paciente.diagnostico_cie10 ? getColorCIE10(paciente.diagnostico_cie10) : null
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
@@ -73,13 +75,18 @@ export default async function PacienteDetailPage({ params }: { params: Promise<{
               <span className="text-xl font-bold text-primary-700">{paciente.nombre[0]}{paciente.apellido[0]}</span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-bold text-gray-900">{paciente.nombre} {paciente.apellido}</h1>
                 <span className={`badge ${ESTADO_PACIENTE_COLORS[paciente.estado]}`}>{ESTADO_PACIENTE_LABELS[paciente.estado]}</span>
+                {paciente.diagnostico_cie10 && diagnosticoColor && (
+                  <span className={`badge ${diagnosticoColor.bg} ${diagnosticoColor.text}`}>
+                    {paciente.diagnostico_cie10} — {getNombreCIE10(paciente.diagnostico_cie10)}
+                  </span>
+                )}
               </div>
               <p className="text-gray-500 text-sm mt-0.5">
                 {paciente.fecha_nacimiento ? `${calcularEdad(paciente.fecha_nacimiento)} años` : ''}
-                {paciente.diagnostico_cie10 ? ` · ${paciente.diagnostico_cie10} — ${getNombreCIE10(paciente.diagnostico_cie10)}` : ''}
+                {paciente.obra_social ? ` · ${paciente.obra_social}` : ''}
               </p>
             </div>
           </div>
@@ -169,11 +176,13 @@ export default async function PacienteDetailPage({ params }: { params: Promise<{
           <div className="card p-6">
             <h2 className="section-title flex items-center gap-2"><FileText className="w-3.5 h-3.5" />Historia clínica</h2>
             <dl className="space-y-4">
-              {paciente.diagnostico_cie10 && (
+              {paciente.diagnostico_cie10 && diagnosticoColor && (
                 <div>
                   <dt className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Diagnóstico CIE-10</dt>
-                  <dd className="flex items-center gap-2">
-                    <span className="badge bg-primary-100 text-primary-800">{paciente.diagnostico_cie10}</span>
+                  <dd className="flex items-center gap-2 flex-wrap">
+                    <span className={`badge ${diagnosticoColor.bg} ${diagnosticoColor.text}`}>
+                      {paciente.diagnostico_cie10}
+                    </span>
                     <span className="text-sm text-gray-700">{getNombreCIE10(paciente.diagnostico_cie10)}</span>
                   </dd>
                 </div>
@@ -189,44 +198,77 @@ export default async function PacienteDetailPage({ params }: { params: Promise<{
             </dl>
           </div>
 
-          {/* Evoluciones */}
+          {/* Evoluciones - Timeline */}
           <div className="card p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="section-title mb-0">Evoluciones</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="section-title mb-0">Evoluciones {evoluciones && evoluciones.length > 0 && <span className="text-gray-400 font-normal">({evoluciones.length})</span>}</h2>
               <AgregarEvolucionModal pacienteId={id} profesionalId={user.id} />
             </div>
+
             {evoluciones && evoluciones.length > 0 ? (
-              <div className="space-y-4">
-                {evoluciones.map((ev: Evolucion) => (
-                  <div key={ev.id} className="border border-gray-100 rounded-xl p-4 hover:border-gray-200 transition-colors">
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
-                      <span className="text-sm font-bold text-gray-800">{formatearFecha(ev.fecha)}</span>
-                      {ev.diagnostico_cie10 && (
-                        <span className="badge bg-primary-100 text-primary-800">
-                          {ev.diagnostico_cie10} — {getNombreCIE10(ev.diagnostico_cie10)}
-                        </span>
-                      )}
-                    </div>
-                    {ev.evolucion && (
-                      <div className="mb-2">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Evolución</p>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{ev.evolucion}</p>
+              <div className="relative">
+                {/* Línea vertical del timeline */}
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-200 via-primary-100 to-transparent" />
+
+                <div className="space-y-6">
+                  {evoluciones.map((ev: Evolucion, index) => {
+                    const color = ev.diagnostico_cie10
+                      ? getColorCIE10(ev.diagnostico_cie10)
+                      : { bg: 'bg-primary-100', text: 'text-primary-800', dot: 'bg-primary-400' }
+
+                    return (
+                      <div key={ev.id} className="relative pl-12">
+                        {/* Punto del timeline */}
+                        <div className={`absolute left-0 top-3 w-8 h-8 rounded-full ${color.bg} border-2 border-white shadow-md flex items-center justify-center z-10`}>
+                          <div className={`w-3 h-3 rounded-full ${color.dot}`} />
+                        </div>
+
+                        {/* Número */}
+                        <div className="absolute -left-1 top-0 w-10 text-center">
+                          <span className="text-xs text-gray-400 font-medium">{evoluciones.length - index}</span>
+                        </div>
+
+                        {/* Card */}
+                        <div className="card p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-gray-800">{formatearFecha(ev.fecha)}</span>
+                              {index === 0 && (
+                                <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">Última</span>
+                              )}
+                            </div>
+                            {ev.diagnostico_cie10 && (
+                              <span className={`badge ${color.bg} ${color.text}`}>
+                                {ev.diagnostico_cie10} — {getNombreCIE10(ev.diagnostico_cie10)}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="space-y-3">
+                            {ev.evolucion && (
+                              <div>
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Evolución</p>
+                                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{ev.evolucion}</p>
+                              </div>
+                            )}
+                            {ev.examen_psicosemiologico && (
+                              <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Examen psicosemiológico</p>
+                                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{ev.examen_psicosemiologico}</p>
+                              </div>
+                            )}
+                            {ev.indicaciones && (
+                              <div className="bg-primary-50 rounded-lg p-3 border border-primary-100">
+                                <p className="text-xs font-semibold text-primary-500 uppercase tracking-wide mb-1">Indicaciones</p>
+                                <p className="text-sm text-primary-800 whitespace-pre-wrap leading-relaxed">{ev.indicaciones}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                    {ev.examen_psicosemiologico && (
-                      <div className="mb-2">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Examen psicosemiológico</p>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{ev.examen_psicosemiologico}</p>
-                      </div>
-                    )}
-                    {ev.indicaciones && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Indicaciones</p>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{ev.indicaciones}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                    )
+                  })}
+                </div>
               </div>
             ) : (
               <div className="text-center py-8 text-gray-400">
