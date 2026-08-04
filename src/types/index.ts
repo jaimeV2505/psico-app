@@ -1,20 +1,16 @@
 export type Genero = 'masculino' | 'femenino' | 'no_binario' | 'otro' | 'prefiero_no_decir'
-export type EstadoCivil = 'soltero' | 'casado' | 'divorciado' | 'viudo' | 'union_libre' | 'separado'
-export type NivelEducativo = 'sin_estudios' | 'primaria' | 'secundaria' | 'tecnico' | 'universitario' | 'posgrado'
 export type EstadoPaciente = 'activo' | 'alta' | 'derivado' | 'inactivo'
 export type EstadoCita = 'pendiente' | 'confirmada' | 'cancelada' | 'realizada' | 'no_asistio'
 export type ModalidadCita = 'presencial' | 'online'
-export type EstadoEmocional = 'muy_mal' | 'mal' | 'regular' | 'bien' | 'muy_bien'
-export type TipoSesion = 'individual' | 'pareja' | 'familiar' | 'grupo'
 
 export interface Profesional {
   id: string
   nombre: string
   apellido: string
   email: string
-  telefono?: string
   especialidad?: string
-  matricula?: string
+  matricula_nacional?: string
+  matricula_provincial?: string
   created_at: string
   updated_at: string
 }
@@ -27,51 +23,42 @@ export interface Paciente {
   dni?: string
   fecha_nacimiento?: string
   genero?: Genero
-  estado_civil?: EstadoCivil
   ocupacion?: string
-  nivel_educativo?: NivelEducativo
   telefono?: string
   email?: string
   direccion?: string
-  ciudad?: string
+  obra_social?: string
+  numero_afiliado?: string
   contacto_emergencia_nombre?: string
   contacto_emergencia_telefono?: string
   contacto_emergencia_relacion?: string
   motivo_consulta?: string
-  diagnostico_cie?: string
-  diagnostico_dsm?: string
-  diagnostico_descripcion?: string
+  enfermedad_actual?: string
+  examen_psicosemiologico?: string
+  diagnostico_cie10?: string
   antecedentes_personales?: string
   antecedentes_familiares?: string
   tratamientos_previos?: string
-  medicacion_actual?: string
-  alergias?: string
-  observaciones_iniciales?: string
+  indicaciones?: string
+  objetivos_terapeuticos?: string
   fecha_inicio_tratamiento?: string
   estado: EstadoPaciente
-  objetivos_terapeuticos?: string
+  deleted_at?: string
   created_at: string
   updated_at: string
-  // joined
-  sesiones?: Sesion[]
+  evoluciones?: Evolucion[]
   citas?: Cita[]
-  _count?: { sesiones: number }
 }
 
-export interface Sesion {
+export interface Evolucion {
   id: string
   paciente_id: string
   profesional_id: string
-  numero_sesion?: number
   fecha: string
-  duracion_min?: number
-  estado_emocional?: EstadoEmocional
-  contenido?: string
-  avances?: string
-  tareas_asignadas?: string
-  proximos_objetivos?: string
-  tipo: TipoSesion
-  modalidad: ModalidadCita
+  evolucion?: string
+  examen_psicosemiologico?: string
+  diagnostico_cie10?: string
+  indicaciones?: string
   created_at: string
   updated_at: string
   pacientes?: Pick<Paciente, 'id' | 'nombre' | 'apellido'>
@@ -97,5 +84,4 @@ export interface PacienteFilters {
   busqueda?: string
   estado?: EstadoPaciente | ''
   genero?: Genero | ''
-  ciudad?: string
 }

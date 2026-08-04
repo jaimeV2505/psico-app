@@ -11,9 +11,9 @@ export default function PerfilForm({ profesional }: { profesional: Profesional }
   const [form, setForm] = useState({
     nombre: profesional?.nombre || '',
     apellido: profesional?.apellido || '',
-    telefono: profesional?.telefono || '',
     especialidad: profesional?.especialidad || '',
-    matricula: profesional?.matricula || '',
+    matricula_nacional: profesional?.matricula_nacional || '',
+    matricula_provincial: profesional?.matricula_provincial || '',
   })
   const [pass, setPass] = useState({ nueva: '', confirmar: '' })
 
@@ -68,17 +68,17 @@ export default function PerfilForm({ profesional }: { profesional: Profesional }
             <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
             <input name="apellido" value={form.apellido} onChange={handleChange} className="input-field" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-            <input name="telefono" value={form.telefono} onChange={handleChange} className="input-field" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">N° Matrícula</label>
-            <input name="matricula" value={form.matricula} onChange={handleChange} className="input-field" />
-          </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Especialidad</label>
             <input name="especialidad" value={form.especialidad} onChange={handleChange} className="input-field" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">MN — Matrícula Nacional</label>
+            <input name="matricula_nacional" value={form.matricula_nacional} onChange={handleChange} className="input-field" placeholder="Ej: 12345" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">MP — Matrícula Provincial</label>
+            <input name="matricula_provincial" value={form.matricula_provincial} onChange={handleChange} className="input-field" placeholder="Ej: 67890" />
           </div>
         </div>
         <div className="flex justify-end">

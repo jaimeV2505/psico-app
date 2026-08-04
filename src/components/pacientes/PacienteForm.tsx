@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Save, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { Paciente } from '@/types'
+import { buscarCIE10, getNombreCIE10 } from '@/lib/cie10'
 
 interface Props {
   paciente?: Partial<Paciente>
@@ -13,12 +14,14 @@ interface Props {
   modo: 'nuevo' | 'editar'
 }
 
-type FormSection = 'personal' | 'contacto' | 'emergencia' | 'clinica' | 'tratamiento'
+type FormSection = 'personal' | 'contacto' | 'emergencia' | 'clinica'
 
 export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [openSections, setOpenSections] = useState(new Set<FormSection>(['personal', 'contacto', 'clinica']))
+  const [cie10Query, setCie10Query] = useState(paciente?.diagnostico_cie10 || '')
+  const [cie10Sugerencias, setCie10Sugerencias] = useState<{ codigo: string; nombre: string }[]>([])
 
   const [form, setForm] = useState({
     nombre: paciente?.nombre || '',
@@ -26,29 +29,25 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
     dni: paciente?.dni || '',
     fecha_nacimiento: paciente?.fecha_nacimiento || '',
     genero: paciente?.genero || '',
-    estado_civil: paciente?.estado_civil || '',
     ocupacion: paciente?.ocupacion || '',
-    nivel_educativo: paciente?.nivel_educativo || '',
+    obra_social: paciente?.obra_social || '',
+    numero_afiliado: paciente?.numero_afiliado || '',
     telefono: paciente?.telefono || '',
     email: paciente?.email || '',
     direccion: paciente?.direccion || '',
-    ciudad: paciente?.ciudad || '',
     contacto_emergencia_nombre: paciente?.contacto_emergencia_nombre || '',
     contacto_emergencia_telefono: paciente?.contacto_emergencia_telefono || '',
     contacto_emergencia_relacion: paciente?.contacto_emergencia_relacion || '',
     motivo_consulta: paciente?.motivo_consulta || '',
-    diagnostico_cie: paciente?.diagnostico_cie || '',
-    diagnostico_dsm: paciente?.diagnostico_dsm || '',
-    diagnostico_descripcion: paciente?.diagnostico_descripcion || '',
+    enfermedad_actual: paciente?.enfermedad_actual || '',
+    examen_psicosemiologico: paciente?.examen_psicosemiologico || '',
+    diagnostico_cie10: paciente?.diagnostico_cie10 || '',
     antecedentes_personales: paciente?.antecedentes_personales || '',
     antecedentes_familiares: paciente?.antecedentes_familiares || '',
     tratamientos_previos: paciente?.tratamientos_previos || '',
-    medicacion_actual: paciente?.medicacion_actual || '',
-    alergias: paciente?.alergias || '',
-    observaciones_iniciales: paciente?.observaciones_iniciales || '',
-    fecha_inicio_tratamiento: paciente?.fecha_inicio_tratamiento || new Date().toISOString().split('T')[0],
-    estado: paciente?.estado || 'activo',
+    indicaciones: paciente?.indicaciones || '',
     objetivos_terapeuticos: paciente?.objetivos_terapeuticos || '',
+    estado: paciente?.estado || 'activo',
   })
 
   function toggle(section: FormSection) {
@@ -65,6 +64,23 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
+  function handleCie10Change(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    setCie10Query(value)
+    if (value.length >= 2) {
+      setCie10Sugerencias(buscarCIE10(value))
+    } else {
+      setCie10Sugerencias([])
+    }
+    setForm(prev => ({ ...prev, diagnostico_cie10: value }))
+  }
+
+  function seleccionarCie10(codigo: string, nombre: string) {
+    setCie10Query(`${codigo} - ${nombre}`)
+    setForm(prev => ({ ...prev, diagnostico_cie10: codigo }))
+    setCie10Sugerencias([])
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.nombre || !form.apellido) return toast.error('Nombre y apellido son requeridos')
@@ -75,8 +91,6 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
       profesional_id: profesionalId,
       fecha_nacimiento: form.fecha_nacimiento || null,
       genero: form.genero || null,
-      estado_civil: form.estado_civil || null,
-      nivel_educativo: form.nivel_educativo || null,
     }
 
     if (modo === 'nuevo') {
@@ -106,13 +120,14 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-4xl">
 
+      {/* DATOS PERSONALES */}
       <div className="card p-6">
         <SH id="personal" label="Datos personales" />
         {openSections.has('personal') && (
           <div className="grid sm:grid-cols-2 gap-4 pt-2">
             <div><L text="Nombre" req /><input name="nombre" value={form.nombre} onChange={handleChange} placeholder="María" required className="input-field" /></div>
             <div><L text="Apellido" req /><input name="apellido" value={form.apellido} onChange={handleChange} placeholder="González" required className="input-field" /></div>
-            <div><L text="DNI / Cédula" /><input name="dni" value={form.dni} onChange={handleChange} placeholder="12.345.678" className="input-field" /></div>
+            <div><L text="DNI" /><input name="dni" value={form.dni} onChange={handleChange} placeholder="12.345.678" className="input-field" /></div>
             <div><L text="Fecha de nacimiento" /><input type="date" name="fecha_nacimiento" value={form.fecha_nacimiento} onChange={handleChange} className="input-field" /></div>
             <div><L text="Género" />
               <select name="genero" value={form.genero} onChange={handleChange} className="input-field">
@@ -124,45 +139,26 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
                 <option value="prefiero_no_decir">Prefiero no decir</option>
               </select>
             </div>
-            <div><L text="Estado civil" />
-              <select name="estado_civil" value={form.estado_civil} onChange={handleChange} className="input-field">
-                <option value="">— Seleccionar —</option>
-                <option value="soltero">Soltero/a</option>
-                <option value="casado">Casado/a</option>
-                <option value="divorciado">Divorciado/a</option>
-                <option value="viudo">Viudo/a</option>
-                <option value="union_libre">Unión libre</option>
-                <option value="separado">Separado/a</option>
-              </select>
-            </div>
             <div><L text="Ocupación" /><input name="ocupacion" value={form.ocupacion} onChange={handleChange} placeholder="Ej: Docente" className="input-field" /></div>
-            <div><L text="Nivel educativo" />
-              <select name="nivel_educativo" value={form.nivel_educativo} onChange={handleChange} className="input-field">
-                <option value="">— Seleccionar —</option>
-                <option value="sin_estudios">Sin estudios</option>
-                <option value="primaria">Primaria</option>
-                <option value="secundaria">Secundaria</option>
-                <option value="tecnico">Técnico</option>
-                <option value="universitario">Universitario</option>
-                <option value="posgrado">Posgrado</option>
-              </select>
-            </div>
+            <div><L text="Obra social" /><input name="obra_social" value={form.obra_social} onChange={handleChange} placeholder="Ej: OSDE, PAMI..." className="input-field" /></div>
+            <div><L text="Número de afiliado" /><input name="numero_afiliado" value={form.numero_afiliado} onChange={handleChange} placeholder="Ej: 123456789" className="input-field" /></div>
           </div>
         )}
       </div>
 
+      {/* CONTACTO */}
       <div className="card p-6">
         <SH id="contacto" label="Información de contacto" />
         {openSections.has('contacto') && (
           <div className="grid sm:grid-cols-2 gap-4 pt-2">
             <div><L text="Teléfono" /><input type="tel" name="telefono" value={form.telefono} onChange={handleChange} placeholder="+54 11 1234-5678" className="input-field" /></div>
             <div><L text="Email" /><input type="email" name="email" value={form.email} onChange={handleChange} placeholder="paciente@email.com" className="input-field" /></div>
-            <div><L text="Dirección" /><input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Calle 123, Piso 4" className="input-field" /></div>
-            <div><L text="Ciudad" /><input name="ciudad" value={form.ciudad} onChange={handleChange} placeholder="Buenos Aires" className="input-field" /></div>
+            <div className="sm:col-span-2"><L text="Dirección" /><input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Calle 123, Piso 4" className="input-field" /></div>
           </div>
         )}
       </div>
 
+      {/* EMERGENCIA */}
       <div className="card p-6">
         <SH id="emergencia" label="Contacto de emergencia" />
         {openSections.has('emergencia') && (
@@ -174,44 +170,61 @@ export default function PacienteForm({ paciente, profesionalId, modo }: Props) {
         )}
       </div>
 
+      {/* HISTORIA CLÍNICA */}
       <div className="card p-6">
         <SH id="clinica" label="Historia clínica" />
         {openSections.has('clinica') && (
           <div className="space-y-4 pt-2">
             <div><L text="Motivo de consulta" /><textarea name="motivo_consulta" value={form.motivo_consulta} onChange={handleChange} rows={3} className="input-field" placeholder="Describir el motivo principal..." /></div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><L text="Diagnóstico CIE-11" /><input name="diagnostico_cie" value={form.diagnostico_cie} onChange={handleChange} placeholder="Ej: F41.1" className="input-field" /></div>
-              <div><L text="Diagnóstico DSM-5" /><input name="diagnostico_dsm" value={form.diagnostico_dsm} onChange={handleChange} placeholder="Ej: 300.02" className="input-field" /></div>
+            <div><L text="Enfermedad actual" /><textarea name="enfermedad_actual" value={form.enfermedad_actual} onChange={handleChange} rows={3} className="input-field" placeholder="Descripción de la enfermedad o problema actual..." /></div>
+            <div><L text="Examen psicosemiológico" /><textarea name="examen_psicosemiologico" value={form.examen_psicosemiologico} onChange={handleChange} rows={4} className="input-field" placeholder="Descripción del estado mental: conciencia, orientación, atención, memoria, pensamiento, lenguaje, afecto..." /></div>
+
+            {/* CIE-10 con autocompletado */}
+            <div className="relative">
+              <L text="Diagnóstico según CIE-10" />
+              <input
+                type="text"
+                value={cie10Query}
+                onChange={handleCie10Change}
+                placeholder="Ej: F41 o ansiedad..."
+                className="input-field"
+                autoComplete="off"
+              />
+              {form.diagnostico_cie10 && getNombreCIE10(form.diagnostico_cie10) && (
+                <p className="text-xs text-primary-600 font-medium mt-1">
+                  ✓ {form.diagnostico_cie10} — {getNombreCIE10(form.diagnostico_cie10)}
+                </p>
+              )}
+              {cie10Sugerencias.length > 0 && (
+                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
+                  {cie10Sugerencias.map(s => (
+                    <button
+                      key={s.codigo}
+                      type="button"
+                      onClick={() => seleccionarCie10(s.codigo, s.nombre)}
+                      className="w-full text-left px-4 py-2.5 hover:bg-primary-50 transition-colors border-b border-gray-50 last:border-0"
+                    >
+                      <span className="text-xs font-bold text-primary-600 mr-2">{s.codigo}</span>
+                      <span className="text-sm text-gray-700">{s.nombre}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div><L text="Descripción del diagnóstico" /><textarea name="diagnostico_descripcion" value={form.diagnostico_descripcion} onChange={handleChange} rows={3} className="input-field" placeholder="Descripción clínica..." /></div>
+
             <div><L text="Antecedentes personales" /><textarea name="antecedentes_personales" value={form.antecedentes_personales} onChange={handleChange} rows={3} className="input-field" placeholder="Historial de salud mental previo..." /></div>
             <div><L text="Antecedentes familiares" /><textarea name="antecedentes_familiares" value={form.antecedentes_familiares} onChange={handleChange} rows={3} className="input-field" placeholder="Historial familiar..." /></div>
             <div><L text="Tratamientos previos" /><textarea name="tratamientos_previos" value={form.tratamientos_previos} onChange={handleChange} rows={2} className="input-field" placeholder="Tratamientos anteriores..." /></div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><L text="Medicación actual" /><textarea name="medicacion_actual" value={form.medicacion_actual} onChange={handleChange} rows={2} className="input-field" placeholder="Medicamentos actuales..." /></div>
-              <div><L text="Alergias" /><textarea name="alergias" value={form.alergias} onChange={handleChange} rows={2} className="input-field" placeholder="Alergias conocidas..." /></div>
+            <div><L text="Indicaciones" /><textarea name="indicaciones" value={form.indicaciones} onChange={handleChange} rows={3} className="input-field" placeholder="Indicaciones terapéuticas..." /></div>
+            <div><L text="Objetivos terapéuticos" /><textarea name="objetivos_terapeuticos" value={form.objetivos_terapeuticos} onChange={handleChange} rows={3} className="input-field" placeholder="Metas y objetivos del tratamiento..." /></div>
+            <div><L text="Estado" />
+              <select name="estado" value={form.estado} onChange={handleChange} className="input-field">
+                <option value="activo">Activo</option>
+                <option value="alta">Alta</option>
+                <option value="derivado">Derivado</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
             </div>
-            <div><L text="Observaciones iniciales" /><textarea name="observaciones_iniciales" value={form.observaciones_iniciales} onChange={handleChange} rows={3} className="input-field" placeholder="Impresiones de la evaluación inicial..." /></div>
-          </div>
-        )}
-      </div>
-
-      <div className="card p-6">
-        <SH id="tratamiento" label="Estado del tratamiento" />
-        {openSections.has('tratamiento') && (
-          <div className="space-y-4 pt-2">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><L text="Fecha inicio del tratamiento" /><input type="date" name="fecha_inicio_tratamiento" value={form.fecha_inicio_tratamiento} onChange={handleChange} className="input-field" /></div>
-              <div><L text="Estado" />
-                <select name="estado" value={form.estado} onChange={handleChange} className="input-field">
-                  <option value="activo">Activo</option>
-                  <option value="alta">Alta</option>
-                  <option value="derivado">Derivado</option>
-                  <option value="inactivo">Inactivo</option>
-                </select>
-              </div>
-            </div>
-            <div><L text="Objetivos terapéuticos" /><textarea name="objetivos_terapeuticos" value={form.objetivos_terapeuticos} onChange={handleChange} rows={4} className="input-field" placeholder="Metas y objetivos del tratamiento..." /></div>
           </div>
         )}
       </div>
